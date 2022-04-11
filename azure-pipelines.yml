@@ -1,0 +1,37 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: |
+    echo Add other tasks to build, test, and deploy your project.
+    echo See https://aka.ms/yaml
+  displayName: 'Run a multi-line script'
+
+- task: AzureImageBuilderTask@1
+  inputs:
+    managedIdentity: '/subscriptions/c2d9ff11-8e55-47f8-a8f2-8b9b4a7d18e8/resourceGroups/masvc-use2-rg-avd-bicep-001/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myIdentity1649696992'
+    imageSource: 'marketplace'
+    baseImagePubOfferSku: 'MicrosoftWindowsDesktop:office-365:win10-21h2-avd-m365-g2'
+    provisioner: 'powershell'
+    windowsUpdateProvisioner: true
+    packagePath: '$(System.DefaultWorkingDirectory)/dmejak/az_avd/aib_Customization'
+    inlineScript: '& ''c:\buildArtifacts\aib_Customization\windows10_Customization.ps1'''
+    storageAccountName: masvcuse2stdevopsaib001
+    distributeType: 'sig'
+    galleryImageId: '/subscriptions/c2d9ff11-8e55-47f8-a8f2-8b9b4a7d18e8/resourceGroups/masvc-use2-rg-avd-bicep-001/providers/Microsoft.Compute/galleries/use2_gal_avdbicep/images/avdbicep_21h2'
+    replicationRegions: 'eastus2'
+    ibSubscription: 'ADO-to-MASVC'
+    ibAzureResourceGroup: 'masvc-use2-rg-avd-bicep-001'
+    ibLocation: 'eastus2'
+    vmSize: 'Standard_D2ds_v4'
